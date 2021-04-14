@@ -4,11 +4,14 @@
         <title>Assemulator</title>
 
         <meta name="author" content="Rui Oliveira, Tiago Bacelar">
+        <meta charset="utf-8">
+        <script src="js/interaction.js"></script>
+        <script src="js/execution.js"></script>
     </head>
 
     <body>
         <h1>Assemulator</h1>
-        <textarea></textarea>
+        <textarea id="input"></textarea>
 
         <table>
             <tr>
@@ -56,7 +59,7 @@
 
         <table>
             <tr>
-                <th>Memory adress</th>
+                <th>Memory Address</th>
                 <th>Value</th>
             </tr>
             <tr>
@@ -89,6 +92,6 @@
 
         <h2>Control Bus</h2>
         <p>xxxxx</p>
-        <button>Rodar</button>
+        <button onclick="execute();">Rodar</button>
     </body>
 </html>
