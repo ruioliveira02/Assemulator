@@ -10,20 +10,28 @@ function updateState(){
 }
 
 function debugRegisters() {
-    for(var i = 0; i < 9; i++) {
+    for(var i = 0; i < registerCount; i++) {
         console.log(list[i] + " " + registers[i]);
     }
 }
 
 
 function updateUIRegisters() {
-    for(var i = 0; i < 9; i++) {
-        document.getElementById(list[i]).firstChild.nodeValue = registers[i];
+    for(var i = 0; i < registerCount; i++) {
+        var value = registers[i].toString(16);
+        document.getElementById(list[i]).firstChild.nodeValue = "0x" + value;
     }
 }
 
 function updateUIMemory() {
-    for(var i = 0; i < 5; i++) {
-        document.getElementById(i).firstChild.nodeValue = memory[i];
+    for(var i = 0; i < memorySize; i++) {
+        var value = memory[i].toString(16);
+
+        //Normalize all data to 2 digits
+        if(value.length == 1) {
+            value = "0" + value;
+        }
+        
+        document.getElementById(i).firstChild.nodeValue = "0x" + value;
     }
 }
