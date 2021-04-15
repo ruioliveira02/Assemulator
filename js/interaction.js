@@ -35,3 +35,48 @@ function updateUIMemory() {
         document.getElementById(i).firstChild.nodeValue = "0x" + value;
     }
 }
+
+const sleep = (milliseconds) => {
+    return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
+
+async function setBuses(address, data, control) {
+    await sleep(defaultDelay);
+    setBus("address", address);
+    setBus("control", control);  
+    setBus("data", data);
+}
+
+async function readAddress(address, value) {
+    await setBuses(address, "", "RD");
+    await setBuses("", value, "");
+    /*await sleep(defaultDelay);
+    setBus("address", address);
+    setBus("control", "RD");  
+    setBus("data", "");
+    
+    await sleep(defaultDelay);
+    setBus("address", "");
+    setBus("control", "");
+    setBus("data", value);*/
+ 
+}
+
+async function writeAddress(address, value) {
+    await setBuses(address, value, "WR");
+    await setBuses("", "", "");
+
+    /*await sleep(defaultDelay);
+    setBus("address", address);
+    setBus("control", "WR");  
+    setBus("data", value);
+
+    await sleep(defaultDelay);
+    setBus("address", "");
+    setBus("control", "");  
+    setBus("data", "");*/
+}
+
+function setBus(bus, value) {
+    document.getElementById(bus).innerHTML = value;
+}
