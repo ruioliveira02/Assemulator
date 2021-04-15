@@ -5,201 +5,238 @@
 
         <meta name="author" content="Rui Oliveira, Tiago Bacelar">
         <meta charset="utf-8">
+        
+        <link rel="stylesheet" type="text/css" href="css/index.css">
+
+         <!-- Bootstrap includes -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> 
+
         <script src="js/interaction.js"></script>
         <script src="js/execution.js"></script>
     </head>
 
     <body onload="randomizeValues();">
-        <h1>Assemulator</h1>
-        <textarea id="input"></textarea>
-
-        <table>
-            <tr>
-                <th>Register</th>
-                <th>Value</th>
-            </tr>
-            <tr>
-                <td>%eax</td>
-                <td id="%eax">0</td>
-            </tr>
-            <tr>
-                <td>%ecx</td>
-                <td id="%ecx">0</td>
-            </tr>
-            <tr>
-                <td>%edx</td>
-                <td id="%edx">0</td>
-            </tr>
-            <tr>
-                <td>%ebx</td>
-                <td id="%ebx">0</td>
-            </tr>
-            <tr>
-                <td>%esi</td>
-                <td id="%esi">0</td>
-            </tr>
-            <tr>
-                <td>%edi</td>
-                <td id="%edi">0</td>
-            </tr>
-            <tr>
-                <td>%esp</td>
-                <td id="%esp">0</td>
-            </tr>
-            <tr>
-                <td>%ebp</td>
-                <td id="%ebp">0</td>
-            </tr>
-            <tr>
-                <td>%eip</td>
-                <td id="%eip">0</td>
-            </tr>
-        </table> 
-
-
-        <table>
-            <tr>
-                <th>Memory Address</th>
-                <th>Value</th>
-            </tr>
-            <tr>
-                <td>0</td>
-                <td id="0">0</td>
-            </tr>
-            <tr>
-                <td>1</td>
-                <td id="1">0</td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td id="2">0</td>
-            </tr>
-            <tr>
-                <td>3</td>
-                <td id="3">0</td>
-            </tr>
-            <tr>
-                <td>4</td>
-                <td id="4">0</td>
-            </tr>
-            <tr>
-                <td>5</td>
-                <td id="5">0</td>
-            </tr>
-            <tr>
-                <td>6</td>
-                <td id="6">0</td>
-            </tr>
-            <tr>
-                <td>7</td>
-                <td id="7">0</td>
-            </tr>
-            <tr>
-                <td>8</td>
-                <td id="8">0</td>
-            </tr>
-            <tr>
-                <td>9</td>
-                <td id="9">0</td>
-            </tr>
-            <tr>
-                <td>10</td>
-                <td id="10">0</td>
-            </tr>
-            <tr>
-                <td>11</td>
-                <td id="11">0</td>
-            </tr>
-            <tr>
-                <td>12</td>
-                <td id="12">0</td>
-            </tr>
-            <tr>
-                <td>13</td>
-                <td id="13">0</td>
-            </tr>
-            <tr>
-                <td>14</td>
-                <td id="14">0</td>
-            </tr>
-            <tr>
-                <td>15</td>
-                <td id="15">0</td>
-            </tr>
-            <tr>
-                <td>16</td>
-                <td id="16">0</td>
-            </tr>
-            <tr>
-                <td>17</td>
-                <td id="17">0</td>
-            </tr>
-            <tr>
-                <td>18</td>
-                <td id="18">0</td>
-            </tr>
-            <tr>
-                <td>19</td>
-                <td id="19">0</td>
-            </tr>
-            <tr>
-                <td>20</td>
-                <td id="20">0</td>
-            </tr>
-            <tr>
-                <td>21</td>
-                <td id="21">0</td>
-            </tr>
-            <tr>
-                <td>22</td>
-                <td id="22">0</td>
-            </tr>
-            <tr>
-                <td>23</td>
-                <td id="23">0</td>
-            </tr>
-            <tr>
-                <td>24</td>
-                <td id="24">0</td>
-            </tr>
-            <tr>
-                <td>25</td>
-                <td id="25">0</td>
-            </tr>
-            <tr>
-                <td>26</td>
-                <td id="26">0</td>
-            </tr>
-            <tr>
-                <td>27</td>
-                <td id="27">0</td>
-            </tr>
-            <tr>
-                <td>28</td>
-                <td id="28">0</td>
-            </tr>
-            <tr>
-                <td>29</td>
-                <td id="29">0</td>
-            </tr>
-            <tr>
-                <td>30</td>
-                <td id="30">0</td>
-            </tr>
-            <tr>
-                <td>31</td>
-                <td id="31">0</td>
-            </tr>
-        </table> 
-
-        <h2>Address Bus</h2>
-        <p id="address">xxxxx</p>
-
-        <h2>Data Bus</h2>
-        <p id="data">xxxxx</p>
-
-        <h2>Control Bus</h2>
-        <p id="control">xxxxx</p>
-        <button onclick="execute();">Rodar</button>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-4">
+                    <h1>Assemulator</h1>
+                    <h4>IA-32 assembly emulator</h2>
+                    <textarea id="input" style="width: 80%; height: 70vh;"></textarea>
+                    <br>
+                    <button onclick="execute();">Run</button>
+                    <label>Frequency</label>
+                    <input type="number" value="2000"><span>Hz</span>
+                </div>
+                <div class="col-8">
+                    <div class="row">
+                        <div class="col text-center">
+                            <div class="outer">
+                                <div class="middle">
+                                  <div class="inner">
+                                    <table>
+                                        <tr>
+                                            <th>Register</th>
+                                            <th>Value</th>
+                                        </tr>
+                                        <tr>
+                                            <td>%eax</td>
+                                            <td id="%eax">0</td>
+                                        </tr>
+                                        <tr>
+                                            <td>%ecx</td>
+                                            <td id="%ecx">0</td>
+                                        </tr>
+                                        <tr>
+                                            <td>%edx</td>
+                                            <td id="%edx">0</td>
+                                        </tr>
+                                        <tr>
+                                            <td>%ebx</td>
+                                            <td id="%ebx">0</td>
+                                        </tr>
+                                        <tr>
+                                            <td>%esi</td>
+                                            <td id="%esi">0</td>
+                                        </tr>
+                                        <tr>
+                                            <td>%edi</td>
+                                            <td id="%edi">0</td>
+                                        </tr>
+                                        <tr>
+                                            <td>%esp</td>
+                                            <td id="%esp">0</td>
+                                        </tr>
+                                        <tr>
+                                            <td>%ebp</td>
+                                            <td id="%ebp">0</td>
+                                        </tr>
+                                        <tr>
+                                            <td>%eip</td>
+                                            <td id="%eip">0</td>
+                                        </tr>
+                                    </table> 
+                                  </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col text-center">
+                            <div class="outer">
+                                <div class="middle">
+                                  <div class="inner">
+                                    <h2>Address Bus</h2>
+                                    <p id="address">xxxxx</p>
+            
+                                    <h2>Data Bus</h2>
+                                    <p id="data">xxxxx</p>
+            
+                                    <h2>Control Bus</h2>
+                                    <p id="control">xxxxx</p>
+                                  </div>
+                                </div>
+                              </div>                        
+                        </div>
+                        <div class="col">
+                            <table>
+                                <tr>
+                                    <th>Memory Address</th>
+                                    <th>Value</th>
+                                </tr>
+                                <tr>
+                                    <td>0x00</td>
+                                    <td id="0">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x01</td>
+                                    <td id="1">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x02</td>
+                                    <td id="2">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x03</td>
+                                    <td id="3">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x04</td>
+                                    <td id="4">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x05</td>
+                                    <td id="5">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x06</td>
+                                    <td id="6">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x07</td>
+                                    <td id="7">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x08</td>
+                                    <td id="8">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x09</td>
+                                    <td id="9">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x0a</td>
+                                    <td id="10">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x0b</td>
+                                    <td id="11">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x0c</td>
+                                    <td id="12">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x0d</td>
+                                    <td id="13">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x0e</td>
+                                    <td id="14">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x0f</td>
+                                    <td id="15">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x10</td>
+                                    <td id="16">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x11</td>
+                                    <td id="17">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x12</td>
+                                    <td id="18">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x13</td>
+                                    <td id="19">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x14</td>
+                                    <td id="20">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x15</td>
+                                    <td id="21">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x16</td>
+                                    <td id="22">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x17</td>
+                                    <td id="23">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x18</td>
+                                    <td id="24">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x19</td>
+                                    <td id="25">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x1a</td>
+                                    <td id="26">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x1b</td>
+                                    <td id="27">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x1c</td>
+                                    <td id="28">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x1d</td>
+                                    <td id="29">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x1e</td>
+                                    <td id="30">0</td>
+                                </tr>
+                                <tr>
+                                    <td>0x1f</td>
+                                    <td id="31">0</td>
+                                </tr>
+                            </table> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </body>
 </html>
