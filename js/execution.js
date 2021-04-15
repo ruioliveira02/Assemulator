@@ -165,15 +165,23 @@ async function setMemory(address, value) {
 
     //Set UI
     for(var j = 0; j < 2; j++) {
-        await writeAddress("0x" + address + 2 * j, "0x" + value.substr(4*j, 4));
+        var curAddress = (address + 2 * j);
+        await writeAddress("0x" + curAddress, "0x" + value.substr(4 * j, 4));
+
+        for(var i = 0; i < 2; i++) {
+            //Don't ask me how it works, it just does
+            var val = "0x" + value.substr(6 - 4 * j - 2 * i, 2);
+            memory[curAddress + i] = parseInt(val,16);
+        }
+        updateState();
     }
 
-    for(var i = 6; i >= 0; i -= 2) {
+    /*for(var i = 6; i >= 0; i -= 2) {
         //Convert back to decimal int
         var val = value.substr(i,2);
         memory[address] = parseInt(val,16);
         address++;
-    }
+    }*/
 }
 
 
