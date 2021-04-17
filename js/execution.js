@@ -11,7 +11,31 @@ var list = ["%eax", "%ebx", "%ecx", "%edx", "%esi", "%edi",
          "%ebp", "%esp", "%eip"];
 
 async function executeInstruction(instruction) {
-    await move(instruction);
+
+	var words = splitOperation(instruction);
+
+	switch (words[0])
+	{
+		//TODO: restrict memory access (only one operand can be a memory reference)
+		case "movl":
+		await new Reference(words[2]).setValue(await evaluate(words[1]));
+		break;
+
+		case "push":
+		Reference.ESP.setValue(await Reference.ESP.getValue() - 4);
+		await new Reference("(%esp)").setValue(await evaluate(words[1]));
+		break;
+
+		case "pop":
+		await new Reference(words[1]).setValue(await evaluate("(%esp)"));
+		Reference.ESP.setValue(await Reference.ESP.getValue() + 4);
+		break;
+
+		case "lea":
+		await new Reference(words[2]).setValue(new Reference(words[1]).effectiveAddress());
+		break;
+	}
+
     updateState();
 }
 
@@ -37,7 +61,7 @@ function randomizeMemory() {
         memory[i] = number;
     }
 }
-
+/*
 async function move(instruction) {
     instruction = instruction.split(" ");
 
@@ -78,6 +102,70 @@ async function move(instruction) {
         const val = await getMemory(firstAddress);
         registers[secondRegister] = val;
     }
+}*/
+
+//splits an operation into its opcode and operands
+//ex: splitOperation("movl -8(%eax, %ebx), %ecx") == ["movl", "-8(%eax, %ebx)", "%ecx"]
+function splitOperation(string)
+{
+	string = string.trim();
+	var space = string.indexOf(" ");
+
+	if (space == -1)
+    	return string.length == 0 ? new Array() : new Array(string);
+
+    var ans = new Array(string.slice(0, space)); //opcode before first space 
+    var parentheses = 0;
+    var cut = space + 1;
+
+    //iterate through the string
+    for (var i = cut; i < string.length; i++)
+    {
+    	if (string[i] == ' ') //ignore spaces
+    		continue;
+
+    	if (string[i] == '(') //update parentheses count
+    		parentheses++;
+    	else if (string[i] == ')') //update parentheses count
+    		parentheses--;
+    	else if (string[i] == ',' && parentheses == 0) //ignore commas inside parentheses
+    	{
+    		var aux = string.slice(cut, i).trim();
+
+    		if (aux === "")
+    		{
+    			console.log("Expected expression after ',': '" + string + "'");
+    			return new Array();
+    		}
+
+    		ans.push(aux);
+    		cut = i + 1;
+    	}
+
+    	if (parentheses < 0) //illegal close parentheses
+    	{
+    		console.log("Unexpected ')' in operation: '" + string + "'");
+    		return new Array();
+    	}
+    }
+
+    if (parentheses != 0) //unclosed parentheses
+	{
+		console.log("Expected ')' in operation: '" + string + "'");
+		return new Array();
+	}
+
+    var aux = string.slice(cut).trim();
+
+	if (aux === "" && ans.length > 1)
+	{
+		console.log("Expected expression after ',': '" + string + "'");
+		return new Array();
+	}
+	else if (aux !== "")
+		ans.push(aux);
+
+    return ans;
 }
 
 
@@ -89,65 +177,8 @@ function getRegisterIndex(register) {
         }
     }
 
-    console.log("Invalid register");
-    console.log(register);
-
+    console.log("Invalid register: '" + register + "'");
     return -1;
-}
-
-
-function isConstant(expression) {
-    return expression.includes("$");
-}
-
-
-function getMemoryLocation(expression) {
-
-    var address = 0;
-
-    //If expression is first operand and has colon at the end
-    if(expression.includes(",")) {
-        expression.slice(0,-1);
-    }
-
-    expression = expression.split("(");
-
-    //If there is a displacement
-    if(expression[0] != "") {
-
-        address += parseInt(expression[0]);
-        //If number is not decimal, then it is hexadecimal
-        if(isNaN(address)) {
-            address = parseInt(expression[0], 16);
-        }
-    }
-
-    if(expression.length == 1) {
-        return address;
-    }
-
-    //Split the operands
-    expression = expression[1].split(",");
-
-    var operands = [0,0,1];
-
-    //Get the values of the operands
-    switch(expression.length) {
-        case 3:
-            operands[2] = parseInt(expression[2]);
-        case 2:
-            operands[1] = registers[getRegisterIndex(expression[1])];
-        case 1:
-            operands[0] = registers[getRegisterIndex(expression[0])];
-            break;         
-    }
-    //Case of Imm(,Reg,Reg)
-    if(expression[0] == "")
-        operands[0] = 0;
-
-    address += operands[0] + operands[1] * operands[2];
-    
-    return address;
 }
 
 
