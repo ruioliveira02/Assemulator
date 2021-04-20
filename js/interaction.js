@@ -1,7 +1,12 @@
-function execute() {
-    var instruction = document.getElementById("input").value;
-    executeInstruction(instruction);
-    updateState();
+async function execute()
+{
+    var lines = document.getElementById("input").value.split("\n");
+    
+    for (var i = 0; i < lines.length; i++)
+    {
+        await executeInstruction(lines[i]);
+        updateState();
+    }
 }
 
 function updateState(){

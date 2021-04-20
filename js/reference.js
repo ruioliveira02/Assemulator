@@ -1,30 +1,22 @@
 class Reference
 {
-	//quote on quote "enum"
-	static get EAX() { return new Reference(0); }
-	static get EBX() { return new Reference(1); }
-	static get ECX() { return new Reference(2); }
-	static get EDX() { return new Reference(3); }
-	static get ESI() { return new Reference(4); }
-	static get EDI() { return new Reference(5); }
-	static get EBP() { return new Reference(6); }
-	static get ESP() { return new Reference(7); }
-	static get EIP() { return new Reference(8); }
+	static get EAX() { return { register:true, index:0 }; }
+	static get EBX() { return { register:true, index:1 }; }
+	static get ECX() { return { register:true, index:2 }; }
+	static get EDX() { return { register:true, index:3 }; }
+	static get ESI() { return { register:true, index:4 }; }
+	static get EDI() { return { register:true, index:5 }; }
+	static get EBP() { return { register:true, index:6 }; }
+	static get ESP() { return { register:true, index:7 }; }
+	static get EIP() { return { register:true, index:8 }; }
 
 	constructor(string) //TODO: pass the size of the reference (is now defaulting to 4 bytes)
 	{
-		if (Number.isInteger(string) && 0 <= string && string <= 8) //register enum
-		{
-			this.register = true;
-			this.index = string;
-			return;
-		}
-
 		if (string.includes('('))
 		{
 			//string is of the form "A(B,C,D)"
 			//any of A B C D can be empty
-			//A and D are literals, B and C are registers
+			//A is a constant, B and C are registers, D is either 1, 2, 4 or 8
 			this.register = false;
 			var aux1 = string.split("(");
 
@@ -37,7 +29,18 @@ class Reference
 			this.index += B != -1 ? registers[B] : 0;
 
 			var C = aux2.length >= 2 ? getRegisterIndex(aux2[1].trim()) : -1;
-			var D = aux2.length >= 3 ? toInteger(aux2[2]) : 1;
+			var D = 1;
+			if (aux2.length >= 3)
+			{
+				switch (aux2[2])
+				{
+					case "1": 	D = 1;	break;
+					case "2": 	D = 2;	break;
+					case "4": 	D = 4;	break;
+					case "8": 	D = 8;	break;
+					default: 	console.error("Invalid index scale in reference '" + string + "'");	return;
+				}
+			}
 			this.index += (C != -1 && !isNaN(D)) ? registers[C] * D : 0;	//TODO: throw errors
 		}
 		else if (string.includes('%'))
@@ -47,7 +50,7 @@ class Reference
 			this.index = getRegisterIndex(string);
 
 			if (this.index == -1)
-				console.log("Error interpreting reference '" + string + "'");
+				console.error("Error interpreting reference '" + string + "'");
 		}
 		else
 		{
@@ -56,7 +59,7 @@ class Reference
 			this.index = toInteger(string);
 
 			if (this.index == NaN)
-				console.log("Error interpreting reference '" + string + "'");
+				console.error("Error interpreting reference '" + string + "'");
 		}
 	}
 
@@ -80,7 +83,7 @@ class Reference
 	{
 		if (this.register)
 		{
-			console.log("ERROR: attempt lo load effective address of a register"); //TODO
+			console.error("ERROR: attempt lo load effective address of a register");
 			return NaN;
 		}
 		else

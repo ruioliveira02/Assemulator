@@ -10,9 +10,12 @@ var defaultDelay = 2000;
 var list = ["%eax", "%ebx", "%ecx", "%edx", "%esi", "%edi",
          "%ebp", "%esp", "%eip"];
 
-async function executeInstruction(instruction) {
+async function executeInstruction(instruction)
+{
+	var r, words = splitOperation(instruction.toLowerCase());
 
-	var words = splitOperation(instruction);
+	if (words.length == 0)
+		return;
 
 	switch (words[0])
 	{
@@ -34,6 +37,76 @@ async function executeInstruction(instruction) {
 		case "lea":
 		await new Reference(words[2]).setValue(new Reference(words[1]).effectiveAddress());
 		break;
+
+		//unary operations
+		case "incl":
+		r = new Reference(words[1]);
+		await r.setValue(await r.getValue() + 1);
+		break;
+
+		case "decl":
+		r = new Reference(words[1]);
+		await r.setValue(await r.getValue() - 1);
+		break;
+
+		case "negl":
+		r = new Reference(words[1]);
+		await r.setValue(- await r.getValue());
+		break;
+
+		case "notl":
+		r = new Reference(words[1]);
+		await r.setValue(~ await r.getValue());
+		break;
+
+		//binary operations
+		case "addl":
+		r = new Reference(words[2]);
+		await r.setValue(await r.getValue() + await evaluate(words[1]));
+		break;
+
+		case "subl":
+		r = new Reference(words[2]);
+		await r.setValue(await r.getValue() - await evaluate(words[1]));
+		break;
+
+		case "imull":
+		r = new Reference(words[2]);
+		await r.setValue(await r.getValue() * await evaluate(words[1]));
+		break;
+
+		//TODO: mull (unsigned multiplication of some registers???)
+
+		case "andl":
+		r = new Reference(words[2]);
+		await r.setValue(await r.getValue() & await evaluate(words[1]));
+		break;
+
+		case "orl":
+		r = new Reference(words[2]);
+		await r.setValue(await r.getValue() | await evaluate(words[1]));
+		break;
+
+		case "xorl":
+		r = new Reference(words[2]);
+		await r.setValue(await r.getValue() ^ await evaluate(words[1]));
+		break;
+
+		case "shll":
+		r = new Reference(words[2]);
+		await r.setValue(await r.getValue() << await evaluate(words[1]));
+		break;
+
+		case "sarl":
+		r = new Reference(words[2]);
+		await r.setValue(await r.getValue() >> await evaluate(words[1]));
+		break;
+
+		//TODO: shrl (logic bitshift)
+
+		//TODO: flux control (jmp, call, ret)
+
+		default: console.error("Opcode '" + words[0] + "' not recognized in instruction: '" + instruction + "'");
 	}
 
     updateState();
@@ -112,17 +185,33 @@ function splitOperation(string)
 	var space = string.indexOf(" ");
 
 	if (space == -1)
-    	return string.length == 0 ? new Array() : new Array(string);
+	{
+		var a = string.indexOf("#"); a = a == -1 ? 999999 : a;
+		var b = string.indexOf(";"); b = b == -1 ? 999999 : b;
+		a = a < b ? a : b; //min
+
+		if (a != 999999)
+			string = string.slice(0, a);
+
+		return string.length == 0 ? new Array() : new Array(string);
+	}
 
     var ans = new Array(string.slice(0, space)); //opcode before first space 
     var parentheses = 0;
     var cut = space + 1;
+    var end = string.length;
 
     //iterate through the string
     for (var i = cut; i < string.length; i++)
     {
     	if (string[i] == ' ') //ignore spaces
     		continue;
+
+    	if (string[i] == '#' || string[i] == ';') //line comment
+    	{
+    		end = i;
+    		break;
+    	}
 
     	if (string[i] == '(') //update parentheses count
     		parentheses++;
@@ -134,7 +223,7 @@ function splitOperation(string)
 
     		if (aux === "")
     		{
-    			console.log("Expected expression after ',': '" + string + "'");
+    			console.error("Expected expression after ',': '" + string + "'");
     			return new Array();
     		}
 
@@ -144,22 +233,22 @@ function splitOperation(string)
 
     	if (parentheses < 0) //illegal close parentheses
     	{
-    		console.log("Unexpected ')' in operation: '" + string + "'");
+    		console.error("Unexpected ')' in operation: '" + string + "'");
     		return new Array();
     	}
     }
 
     if (parentheses != 0) //unclosed parentheses
 	{
-		console.log("Expected ')' in operation: '" + string + "'");
+		console.error("Expected ')' in operation: '" + string + "'");
 		return new Array();
 	}
 
-    var aux = string.slice(cut).trim();
+    var aux = string.slice(cut, end).trim();
 
 	if (aux === "" && ans.length > 1)
 	{
-		console.log("Expected expression after ',': '" + string + "'");
+		console.error("Expected expression after ',': '" + string + "'");
 		return new Array();
 	}
 	else if (aux !== "")
@@ -177,7 +266,7 @@ function getRegisterIndex(register) {
         }
     }
 
-    console.log("Invalid register: '" + register + "'");
+    console.error("Invalid register: '" + register + "'");
     return -1;
 }
 
